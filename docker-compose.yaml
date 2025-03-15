@@ -1,0 +1,21 @@
+version: "3.8"
+
+services:
+  hw1-q1-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: air6011_hw1_q1:latest
+    container_name: hw1_q1_app
+    command: ["python", "main.py", "--dataset", "cifar", "--device", "cuda:0"]
+    volumes:
+      - ./config:/app/config
+      - ./data:/app/data
+      - ./result:/app/result
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
