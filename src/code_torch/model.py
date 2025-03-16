@@ -23,20 +23,6 @@ class PooledDoubleConv(nn.Sequential):
         )
 
 
-class ResidualPooledDoubleConv(nn.Module):
-    def __init__(self, input_dim: int, output_dim: int):
-        super().__init__()
-        self.block = PooledDoubleConv(input_dim, output_dim)
-        self.shortcut = (
-            nn.Conv2d(input_dim, output_dim, 1)
-            if input_dim != output_dim
-            else nn.Identity()
-        )
-
-    def forward(self, x):
-        return self.block(x) + self.shortcut(x)
-
-
 class Net(nn.Sequential):
     def __init__(self, input_dim: int, output_dim: int):
         super().__init__(

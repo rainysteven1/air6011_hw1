@@ -5,6 +5,7 @@ from dataclasses import dataclass, field
 @dataclass
 class DatasetConfig:
     name: str = "cifar"
+    download: bool = False
     batch_size: int = 64
     num_workers: int = 2
 
@@ -19,7 +20,6 @@ class ModelConfig:
 class OptimParams:
     lr: float = 0.01
     momentum: float = 0.9
-    weight_decay: float = 5e-4
 
 
 @dataclass

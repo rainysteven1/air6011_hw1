@@ -1,3 +1,4 @@
+import cupy as cp
 import numpy as np
 import random
 import torch
@@ -5,6 +6,8 @@ import torch
 
 def set_seed(seed: int = 42):
     """Set all random seeds to ensure repeatable experiments"""
+    cp.random.seed(seed)
+
     random.seed(seed)
 
     np.random.seed(seed)

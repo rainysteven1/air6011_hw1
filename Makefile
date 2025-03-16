@@ -1,11 +1,11 @@
-build:
-	docker build -t  air6011_hw1_q1:latest .
-
 run:
-	docker compose up -d
+	docker build -t  air6011_hw1_q1:latest . && docker compose up -d
 
 debug-cifar:
-	python main.py --dataset cifar --device cuda:0
+	python main.py -d cifar -l torch
+
+debug-cupy:
+	python main.py -d mnist -l cupy
 
 debug-mnist:
-	python main.py --dataset mnist --device cuda:0
+	python main.py -d mnist -l torch

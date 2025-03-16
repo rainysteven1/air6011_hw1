@@ -1,65 +1,13 @@
-from typing import Dict
+from src.code_torch.model import Net
+from src.dataeset import get_data_loader, get_transformations
 from src.logger import logger
-from src.model import Net
 from omegaconf import ListConfig
 import os
 import torch
 import torch.nn as nn
 import torch.optim as optim
-import torchvision.datasets as tv_datasets
-import torchvision.transforms as tv_transforms
 
 __all__ = ["run"]
-
-
-def _get_transformation():
-    transformation = {}
-    for data_type in ("train", "test"):
-        is_train = data_type == "train"
-        transformation[data_type] = tv_transforms.Compose(
-            (
-                [
-                    tv_transforms.RandomCrop(32, padding=4),
-                    tv_transforms.RandomHorizontalFlip(p=0.5),
-                    tv_transforms.ColorJitter(brightness=0.2, contrast=0.2),
-                    tv_transforms.RandAugment(),
-                    tv_transforms.RandomRotation(degrees=15),
-                    tv_transforms.RandomAffine(degrees=0, translate=(0.1, 0.1)),
-                ]
-                if is_train
-                else []
-            )
-            + [
-                tv_transforms.ToTensor(),
-                tv_transforms.Normalize(
-                    mean=[0.4914, 0.4822, 0.4465],
-                    std=[0.2470, 0.2435, 0.2616],
-                ),
-            ]
-        )
-
-    return transformation
-
-
-def _get_data_loader(config: ListConfig, transformation: Dict):
-    dataset, loader = {}, {}
-    for data_type in ("train", "test"):
-        is_train = data_type == "train"
-        className = tv_datasets.CIFAR10 if config.name == "cifar" else tv_datasets.MNIST
-        dataset[data_type] = className(
-            root="./data",
-            train=is_train,
-            download=False,
-            transform=transformation[data_type],
-        )
-        loader[data_type] = torch.utils.data.DataLoader(
-            dataset[data_type],
-            batch_size=config.batch_size,
-            shuffle=is_train,
-            num_workers=config.num_workers,
-        )
-
-    return loader
 
 
 def _train(config: ListConfig, device: str, loader, net: nn.Module):
@@ -126,10 +74,8 @@ def _test(device, loader, net: nn.Module):
 
 
 def run(config: ListConfig):
-    logger.info(config)
-
-    transformation = _get_transformation()
-    loader = _get_data_loader(config.dataset, transformation)
+    transformations = get_transformations()
+    loader = get_data_loader(config.dataset, transformations)
 
     net = Net(**config.model)
     net.to(config.device)
