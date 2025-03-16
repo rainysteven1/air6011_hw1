@@ -21,7 +21,7 @@ class PooledDoubleConv(Sequential):
             ConvBNReLU(input_dim, middle_dim),
             ConvBNReLU(middle_dim, output_dim),
             layer.MaxPool2d(2),
-            layer.Dropout(0.3),
+            layer.Dropout(0.25),
         )
 
 
@@ -31,10 +31,11 @@ class Net(Sequential):
             PooledDoubleConv(input_dim, 64),
             PooledDoubleConv(64, 128),
             PooledDoubleConv(128, 256),
+            PooledDoubleConv(256, 512),
             layer.Flatten(),
-            layer.Linear(256 * 3 * 3, 256),
+            layer.Linear(512 * 1 * 1, 256),
             layer.BatchNorm1d(256),
             ReLU(),
-            layer.Dropout(0.3),
+            layer.Dropout(0.25),
             layer.Linear(256, output_dim),
         )

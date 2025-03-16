@@ -5,6 +5,7 @@ from pythonjsonlogger import jsonlogger
 import os
 import logging
 import sys
+import uuid
 
 
 class _ColorCodes:
@@ -111,5 +112,5 @@ class CustomLogger:
 
 
 timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-log_file = os.path.join(os.getcwd(), "result", timestamp)
+log_file = os.path.join(os.getcwd(), "result", timestamp, str(uuid.uuid4()))
 logger = CustomLogger("AIR6011_HW1", log_file, "INFO")

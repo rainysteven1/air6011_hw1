@@ -6,7 +6,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
-RUN pip install torchvision omegaconf python-json-logger cupy-cuda12x
+RUN pip install torchvision omegaconf python-json-logger cupy-cuda12x matplotlib pandas
 
 WORKDIR /app
 

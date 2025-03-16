@@ -2,7 +2,7 @@
     "dataset": {
         "name": "mnist",
         "download": false,
-        "batch_size": 64,
+        "batch_size": 128,
         "num_workers": 2
     },
     "device": "cuda",
@@ -14,11 +14,10 @@
         "optim": {
             "name": "SGD",
             "params": {
-                "lr": 5e-5,
-                "momentum": 0.9
+                "lr": 7e-5
             }
         },
-        "num_epochs": 128,
+        "num_epochs": 150,
         "print_every": 200
     }
 }

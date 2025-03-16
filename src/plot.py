@@ -3,7 +3,9 @@ import matplotlib.pyplot as plt
 import os
 
 
-def visualize(train_losses, test_accs):
+def visualize(
+    train_losses, test_accs, save_path=os.path.join(logger.log_dir, "curve.png")
+):
     plt.figure(figsize=(12, 6), dpi=300)
 
     # 损失曲线
@@ -18,9 +20,9 @@ def visualize(train_losses, test_accs):
     plt.grid(True, linestyle="--", alpha=0.7)
     plt.legend()
 
-    final_acc = test_accs[-1] if test_accs else 0
-    plt.suptitle(f"Training Result (Final Acc: {final_acc:.2%})", fontsize=14)
+    best_acc = max(test_accs)
+    plt.suptitle(f"Training Result (Best Acc: {best_acc:.2%})", fontsize=14)
 
     plt.tight_layout()
-    plt.savefig(os.path.join(logger.log_dir, "curve.png"), bbox_inches="tight")
+    plt.savefig(save_path, bbox_inches="tight")
     plt.close()

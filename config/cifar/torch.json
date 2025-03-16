@@ -14,8 +14,7 @@
         "optim": {
             "name": "SGD",
             "params": {
-                "lr": 0.01,
-                "momentum": 0.9
+                "lr": 0.01
             }
         },
         "num_epochs": 128,

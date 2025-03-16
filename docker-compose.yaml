@@ -1,10 +1,10 @@
 version: "3.8"
 
 services:
-  hw1-q1-app:
+  hw1-q1-cifar:
     image: air6011_hw1_q1:latest
-    container_name: hw1_q1_app
-    command: ["python", "main.py", "-d", "mnist", "-l", "cupy"]
+    container_name: hw1-q1-mnist
+    command: ["python", "main.py", "-d", "cifar", "-l", "torch"]
     volumes:
       - ./config:/app/config
       - ./data:/app/data
@@ -16,3 +16,19 @@ services:
             - driver: nvidia
               capabilities: [gpu]
               device_ids: ["0"]
+
+  hw1-q2-mnist:
+    image: air6011_hw1_q1:latest
+    container_name: hw1-q2-mnist
+    command: ["python", "main.py", "-d", "mnist", "-l", "cupy"]
+    volumes:
+      - ./config:/app/config
+      - ./data:/app/data
+      - ./result:/app/result
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              capabilities: [gpu]
+              device_ids: ["1"]

@@ -21,7 +21,6 @@ class ModelConfig:
 @dataclass
 class OptimParams:
     lr: float
-    momentum: float
 
 
 @dataclass

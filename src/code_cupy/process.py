@@ -27,10 +27,13 @@ def _train(config: ListConfig, device: str, loader, net: mo.Module):
 
             pred = net(img)
             loss = criterion(pred, target)
+            print(loss)
 
             optimizer.zero_grad()
             net.backward(criterion.backward(loss))
             optimizer.step()
+
+            print(loss.item())
 
             running_loss += loss.item()
             if i % config.print_every == config.print_every - 1:
@@ -53,7 +56,7 @@ def _train(config: ListConfig, device: str, loader, net: mo.Module):
         train_losses.append(running_loss / len(loader["train"]))
         test_accs.append(accuracy)
         logger.info(
-            f"Epoch [{epoch + 1}/{epoch}] "
+            f"Epoch [{epoch + 1}/{config.num_epochs}] "
             f"Train Loss: {train_losses[-1]:.3f} "
             f"Test Acc: {100 * accuracy:.2f}%"
         )
@@ -81,7 +84,7 @@ def run(config: ListConfig):
 
     df = pd.DataFrame(
         [
-            {"Epoch": i, "Loss": loss, "Accuracy": acc}
+            {"Epoch": i + 1, "Loss": loss, "Accuracy": acc}
             for i, (loss, acc) in enumerate(zip(train_losses, test_accs))
         ]
     )

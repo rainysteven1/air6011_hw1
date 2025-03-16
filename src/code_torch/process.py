@@ -69,7 +69,7 @@ def _train(config: ListConfig, device: str, loader, net: nn.Module):
         train_losses.append(running_loss / len(loader["train"]))
         test_accs.append(accuracy)
         logger.info(
-            f"Epoch [{epoch + 1}/{epoch}] "
+            f"Epoch [{epoch + 1}/{config.num_epochs}] "
             f"Train Loss: {train_losses[-1]:.3f} "
             f"Test Acc: {100 * accuracy:.2f}%"
         )
