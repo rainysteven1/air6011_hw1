@@ -20,7 +20,7 @@ class SGD(Optim):
         self.momentum = momentum
         self.velocities = []
 
-        # 构建速度缓冲区
+        # buffer
         for param_group in self.params:
             group_vel = []
             for param in param_group:
@@ -30,11 +30,10 @@ class SGD(Optim):
     def step(self):
         for param_group, vel_group in zip(self.params, self.velocities):
             for param, vel in zip(param_group, vel_group):
-                grad = param.get("grad", param.get("grads"))  # 兼容不同命名
+                grad = param.get("grad", param.get("grads"))
                 if grad is None:
                     continue
 
-                # 动量更新
                 vel[...] = self.momentum * vel + grad
                 param["val"][...] -= self.lr * vel
 
