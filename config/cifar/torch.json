@@ -1,0 +1,24 @@
+{
+    "dataset": {
+        "name": "cifar",
+        "download": false,
+        "batch_size": 64,
+        "num_workers": 2
+    },
+    "device": "cuda",
+    "model": {
+        "input_dim": 3,
+        "output_dim": 10
+    },
+    "train": {
+        "optim": {
+            "name": "SGD",
+            "params": {
+                "lr": 0.01,
+                "momentum": 0.9
+            }
+        },
+        "num_epochs": 128,
+        "print_every": 200
+    }
+}
