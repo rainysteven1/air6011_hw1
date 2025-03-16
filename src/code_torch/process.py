@@ -1,8 +1,10 @@
+from omegaconf import ListConfig
 from src.code_torch.model import Net
 from src.dataeset import get_data_loader, get_transformations
 from src.logger import logger
-from omegaconf import ListConfig
+from src.plot import visualize
 import os
+import pandas as pd
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -19,9 +21,9 @@ def _train(config: ListConfig, device: str, loader, net: nn.Module):
     # loss function
     criterion = nn.CrossEntropyLoss()
 
-    net.train()
-
+    train_losses, test_accs = [], []
     for epoch in range(config.num_epochs):
+        net.train()
         running_loss = 0.0
         for i, (img, target) in enumerate(loader["train"]):
             img, target = img.to(device), target.to(device)
@@ -49,28 +51,31 @@ def _train(config: ListConfig, device: str, loader, net: nn.Module):
                 logger.info(message)
                 running_loss = 0.0
 
+            net.eval()
+
+        correct, total = 0, 0
+        with torch.no_grad():
+            for img, target in loader["test"]:
+                img, target = img.to(device), target.to(device)
+
+                # make prediction
+                pred = net(img)
+
+                # accumulate
+                total += len(target)
+                correct += (torch.argmax(pred, dim=1) == target).sum().item()
+
+        accuracy = correct / total
+        train_losses.append(running_loss / len(loader["train"]))
+        test_accs.append(accuracy)
+        logger.info(
+            f"Epoch [{epoch + 1}/{epoch}] "
+            f"Train Loss: {train_losses[-1]:.3f} "
+            f"Test Acc: {100 * accuracy:.2f}%"
+        )
+
     logger.info("Finished Training")
-
-
-def _test(device, loader, net: nn.Module):
-    net.eval()
-
-    correct, total = 0, 0
-    with torch.no_grad():
-        for img, target in loader["test"]:
-            img, target = img.to(device), target.to(device)
-
-            # make prediction
-            pred = net(img)
-
-            # accumulate
-            total += len(target)
-            correct += (torch.argmax(pred, dim=1) == target).sum().item()
-
-    message = f"Accuracy of the network on the {total} test images: {100 * correct / total:.2f}%"
-    logger.info(message)
-
-    logger.info("Finished Testing")
+    return train_losses, test_accs
 
 
 def run(config: ListConfig):
@@ -80,10 +85,19 @@ def run(config: ListConfig):
     net = Net(**config.model)
     net.to(config.device)
 
-    message = f"number of parameters: {sum(p.numel() for p in net.parameters() if p.requires_grad) / 1_000_000:.2f}M"
-    logger.info(message)
+    logger.info(
+        f"number of parameters: {sum(p.numel() for p in net.parameters() if p.requires_grad) / 1_000_000:.2f}M"
+    )
 
-    _train(config.train, config.device, loader, net)
-    _test(config.device, loader, net)
+    train_losses, test_accs = _train(config.train, config.device, loader, net)
+    visualize(train_losses, test_accs)
 
     torch.save(net.state_dict(), os.path.join(logger.log_dir, "model.pth"))
+
+    df = pd.DataFrame(
+        [
+            {"Epoch": i, "Loss": loss, "Accuracy": acc}
+            for i, (loss, acc) in enumerate(zip(train_losses, test_accs))
+        ]
+    )
+    df.to_csv(os.path.join(logger.log_dir, "result.csv"), index=False)

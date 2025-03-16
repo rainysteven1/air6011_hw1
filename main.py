@@ -1,8 +1,9 @@
-from config import cifar_config, mnist_config
 from src.code_cupy.process import run as run_cupy
 from src.code_torch.process import run as run_torch
+from src.config_manager import ConfigManager
 from src.logger import logger
 import argparse
+import os
 import platform
 
 
@@ -29,7 +30,9 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    config = cifar_config if args.dataset == "cifar" else mnist_config
+    config = ConfigManager().load(
+        os.path.join(os.getcwd(), "config", args.dataset, f"{args.library}.json")
+    )
     logger.info(config)
 
     conf = {"running_platform": platform.node()}

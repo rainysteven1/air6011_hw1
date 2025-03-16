@@ -203,7 +203,7 @@ class BatchNorm2d(_BatchNorm):
         d_var = (
             -0.5
             * (dx_hat * self.x_centered).sum(axis=(0, 2, 3))
-            * (cp.power(self.inv_std, 3))
+            * (cp.power(self.inv_std, -3))
         )
         d_mean = -(dx_hat * self.inv_std.reshape(1, -1, 1, 1)).sum(
             axis=(0, 2, 3)
